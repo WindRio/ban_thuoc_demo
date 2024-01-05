@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "BonBon",
+    "slug": "BonBon",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./src/assets/splash-screen.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./src/assets/splash-screen.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/splash-screen.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./src/assets/splash-screen.png"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
+
+  }
+}
