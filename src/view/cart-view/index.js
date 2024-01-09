@@ -1,20 +1,18 @@
 import { AntDesign } from "@expo/vector-icons";
-import { Box, HStack, Text, VStack } from "@gluestack-ui/themed";
+import { Box, Text, VStack } from "@gluestack-ui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { cloneDeep, isEmpty } from "lodash";
 import { useEffect, useMemo, useState } from "react";
-import { Dimensions, Keyboard, Pressable, SafeAreaView, TouchableWithoutFeedback } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { SwipeListView } from "react-native-swipe-list-view";
+import { SafeAreaView } from "react-native";
 
 import { HeaderBackCommon, ToastNotificationCommon, TotalPriceCommon } from "../../components";
 import { useCart, useListOrder, useProduct } from "../../hook";
 import { shipPrice, timeoutGet } from "../../utils";
 import ConfirmOderCreationModal from "./confirm-order-creation-modal";
 import DeleteProductModal from "./delete-product-modal";
-import ProductCard from "./product-card";
 import SearchCustomerModal from "./search-customer-modal";
 import { styles } from "./style";
+import SwipeList from "./swipe-list";
 
 let listCartProduct = [];
 
@@ -137,10 +135,10 @@ export default function CartScreen() {
     });
     navigate.navigate("ProductScreen");
   };
-  const toggleSearchCustomerModal = () =>{
+  const toggleSearchCustomerModal = () => {
     setShowModal(!isShowModal);
     setClearTextSearch(!isClearTextSearch);
-  }
+  };
 
   const onChooseCustomer = (data) => {
     setCartCustomer(data);
@@ -259,34 +257,6 @@ export default function CartScreen() {
     }
   };
 
-  function renderHiddenItem(data, _rowMap) {
-    return (
-      <HStack flex={1} pl={2} justifyContent="flex-end">
-        <Pressable
-          cursor="pointer"
-          onPress={() => {
-            onOpenDeleteProductModal(data, _rowMap);
-          }}
-          _pressed={{
-            opacity: 0.5,
-          }}
-        >
-          <VStack
-            alignItems="center"
-            space={2}
-            backgroundColor="red"
-            height={"100%"}
-            width={Dimensions.get("window").width * 0.3}
-            alineItem={"center"}
-            justifyContent={"center"}
-          >
-            <AntDesign name="delete" size={24} color="#fff"/>
-          </VStack>
-        </Pressable>
-      </HStack>
-    );
-  }
-
   return (
     <SafeAreaView style={styles.container}>
       <Box style={styles.boxHeaderBack}>
@@ -298,47 +268,27 @@ export default function CartScreen() {
           Description={isDeleteAll ? "Đã xóa tất cả sản phẩm" : `Đã xóa sản phẩm ${productDelete.productName}`}
         />
       )}
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <KeyboardAwareScrollView>
-          <SwipeListView
-            scrollEnabled={false}
-            data={listProductSwipe}
-            renderItem={({ item, index }) => {
-              return (
-                <ProductCard
-                  data={item}
-                  index={index}
-                  onUpdateCart={updateCartCurrentData}
-                  validateData={listCartProduct}
-                  isValidateDataCart={isValidateDataCart}
-                />
-              );
-            }}
-            renderHiddenItem={renderHiddenItem}
-            rightOpenValue={-Dimensions.get("window").width * 0.3}
-            previewRowKey={"0"}
-            previewOpenValue={40}
-            previewOpenDelay={3000}
-          />
-
-          <SearchCustomerModal
-            isShowModal={isShowModal}
-            onChooseCustomer={onChooseCustomer}
-            CloseModal={toggleSearchCustomerModal}
-            isClearTextSearch={isClearTextSearch}
-          />
-          <DeleteProductModal
-            isOpen={isDeleteModal}
-            onClose={closeDeleteModal}
-            onConfirm={submitDeleteProduct}
-            isDeleteAll={isDeleteAll}
-            productName={productDelete.productName}
-          />
-
-          <ConfirmOderCreationModal isOpen={isOpenModalCreateOrder} onClose={closeCreateOderModal} onConfirm={confirmCreateOrderModal} />
-        </KeyboardAwareScrollView>
-      </TouchableWithoutFeedback>
-
+      <SwipeList
+        listProductSwipe={listProductSwipe}
+        updateCartCurrentData={updateCartCurrentData}
+        listCartProduct={listCartProduct}
+        isValidateDataCart={isValidateDataCart}
+        onOpenDeleteProductModal={onOpenDeleteProductModal}
+      />
+      <SearchCustomerModal
+        isShowModal={isShowModal}
+        onChooseCustomer={onChooseCustomer}
+        CloseModal={toggleSearchCustomerModal}
+        isClearTextSearch={isClearTextSearch}
+      />
+      <DeleteProductModal
+        isOpen={isDeleteModal}
+        onClose={closeDeleteModal}
+        onConfirm={submitDeleteProduct}
+        isDeleteAll={isDeleteAll}
+        productName={productDelete.productName}
+      />
+      <ConfirmOderCreationModal isOpen={isOpenModalCreateOrder} onClose={closeCreateOderModal} onConfirm={confirmCreateOrderModal} />
       {listProductSwipe.length === 0 ? (
         <VStack alignItems="center" marginBottom={"60%"}>
           <AntDesign name="warning" size={54} color="#cccc" />
@@ -349,7 +299,6 @@ export default function CartScreen() {
       ) : (
         <></>
       )}
-
       <TotalPriceCommon
         customer={cartCustomer}
         isButton={true}
